@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OCF Classic T-Shirt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --brand:#0a3d91; --brand2:#0d5bd7; }
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+
+    /* Lightbox styles */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    #lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-white text-slate-800">
+
+  <!-- HEADER -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between">
+        <a href="./index.html" class="flex items-center gap-3">
+          <img src="https://ocf.net/wp-content/uploads/2024/07/OCF-Official-Logo-hi-resolution.png" alt="OCF Logo" class="h-12 w-auto">
+          <div class="leading-tight">
+            <div class="text-sm font-semibold text-slate-900">Greek Orthodox @ UToledo</div>
+            <div class="text-xs text-slate-500">Official OCF Merchandise</div>
+          </div>
+        </a>
+        <a href="./index.html" class="text-sm text-[color:var(--brand2)] underline">Back to Shop</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- PRODUCT DETAIL -->
+  <section class="py-12">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-10">
+      
+      <!-- Images -->
+      <div class="space-y-4">
+        <img src="./shirt-front.jpg" alt="OCF T-Shirt Front" class="w-full object-contain border rounded-lg cursor-pointer lightbox-trigger">
+        <img src="./shirt-back.jpg" alt="OCF T-Shirt Back" class="w-full object-contain border rounded-lg cursor-pointer lightbox-trigger">
+        <img src="./size-chart.jpg" alt="Size Chart" class="w-full object-contain border rounded-lg cursor-pointer lightbox-trigger">
+      </div>
+
+      <!-- Details -->
+      <div>
+        <h1 class="text-3xl font-bold mb-4">OCF Classic T-Shirt</h1>
+        <p class="text-slate-700 mb-4">Show your faith and school spirit with this premium Comfort Colors 1717 t-shirt. 100% cotton, unisex sizing, durable print.</p>
+        <ul class="list-disc list-inside text-slate-700 mb-4">
+          <li>Soft-washed, garment-dyed fabric</li>
+          <li>Classic fit, double-stitched seams</li>
+          <li>Unisex sizing (see size chart)</li>
+        </ul>
+        <div class="text-2xl font-bold mb-6">$30.00</div>
+        <a href="https://buy.stripe.com/test_cNicN6g3Keeb8KJbBh73G00" 
+           target="_blank" rel="noopener"
+           class="inline-block px-6 py-3 rounded-lg bg-[color:var(--brand)] text-white font-semibold hover:bg-[color:var(--brand2)]">
+          Buy Now
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox" class="flex">
+    <img id="lightbox-img" src="" alt="Expanded Image">
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t py-10">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-sm text-slate-600 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p>© <span id="year"></span> Greek Orthodox @ UToledo · All rights reserved.</p>
+      <a href="./index.html" class="hover:text-[color:var(--brand2)]">Back to Shop</a>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Lightbox functionality
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const triggers = document.querySelectorAll('.lightbox-trigger');
+
+    triggers.forEach(img => {
+      img.addEventListener('click', () => {
+        lightboxImg.src = img.src;
+        lightbox.style.display = 'flex';
+      });
+    });
+
+    lightbox.addEventListener('click', () => {
+      lightbox.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
