@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Orthodox @ UToledo — Shop</title>
+<meta name="description" content="Orthodox Christian Fellowship · University of Toledo — official merchandise." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{
+    --blue:#0a3d91;          /* UT-ish deep blue */
+    --blue-2:#184ea9;        /* slightly lighter blue */
+    --ink:#0f172a;           /* slate-900 */
+    --muted:#64748b;         /* slate-500 */
+    --line:#e5e7eb;          /* gray-200 */
+  }
+  body{font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color:var(--ink); background:#fafafa;}
+  .container{max-width:960px}
+
+  /* Pills (override header's text-white) */
+  .pill{
+    border:1px solid #dbe3f4; background:#fff; padding:.5rem .85rem; border-radius:999px; white-space:nowrap;
+    color:var(--ink);              /* make text visible */
+    transition:background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .pill:hover{ background:#f5f8ff; border-color:#cfe0ff; }
+  .pill.active{ background:#eef3ff; border-color:#cfe0ff; color:var(--blue); font-weight:600; }
+
+  .card{background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,.04)}
+  .btn{display:inline-flex; align-items:center; justify-content:center; border-radius:12px; padding:.65rem 1rem; font-weight:600}
+  .btn-primary{background:var(--blue); color:#fff}
+  .btn-primary:active{transform:translateY(1px)}
+  .btn-ghost{background:#fff; border:1px solid var(--line); color:var(--ink)} /* ensure readable on white */
+
+  /* Bottom-sheet cart */
+  #cartSheet{position:fixed; left:0; right:0; bottom:-100%; transition:bottom .28s ease; background:#fff; border-top-left-radius:16px; border-top-right-radius:16px; box-shadow:0 -10px 30px rgba(0,0,0,.15); z-index:60}
+  #cartOverlay{position:fixed; inset:0; background:rgba(0,0,0,.35); backdrop-filter:saturate(130%) blur(2px); opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:50}
+  .sheet-open #cartSheet{bottom:0}
+  .sheet-open #cartOverlay{opacity:1; pointer-events:auto}
+  .badge{min-width:1.25rem; height:1.25rem; border-radius:999px; background:#fff; color:var(--blue); font-size:.75rem; font-weight:700; display:inline-flex; align-items:center; justify-content:center}
+
+  /* Auto-scroll categories hint */
+  .catbar{scrollbar-width:none} .catbar::-webkit-scrollbar{display:none}
+</style>
+</head>
+<body>
+
+<!-- Top info bar -->
+<div class="w-full bg-[color:var(--blue)] text-white text-[12px] text-center py-2">
+  Orthodox Christian Fellowship · University of Toledo
+</div>
+
+<!-- Header (blue) -->
+<header class="bg-[color:var(--blue)] text-white sticky top-0 z-40">
+  <div class="mx-auto container px-4 py-3 flex items-center justify-between">
+    <a href="#" class="flex items-center gap-3">
+      <!-- Bigger logo -->
+      <img src="./logo.png" alt="OCF Logo" class="h-14 w-auto">
+    </a>
+
+    <!-- Cart button -->
+    <button id="openCart" class="relative rounded-full bg-[color:var(--blue-2)] px-3 py-2 text-sm font-semibold">
+      Cart <span id="cartCount" class="absolute -top-2 -right-2 badge">0</span>
+    </button>
+  </div>
+
+  <!-- Category bar -->
+  <nav class="mx-auto container px-4 pb-3">
+    <ul class="flex gap-2 overflow-x-auto catbar">
+      <li><button class="pill active" data-cat="all">All</button></li>
+      <li><button class="pill" data-cat="tees">T-Shirts</button></li>
+      <li><button class="pill" data-cat="hoodies">Hoodies</button></li>
+      <li><button class="pill" data-cat="hats">Hats</button></li>
+      <li><button class="pill" data-cat="accessories">Accessories</button></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Hero – blue banner with logo -->
+<section class="bg-[color:var(--blue)]">
+  <div class="mx-auto container px-4 py-8">
+    <div class="rounded-2xl bg-[rgba(255,255,255,.08)] border border-[rgba(255,255,255,.25)] p-8 flex items-center justify-center">
+      <img src="./logo.png" alt="OCF Logo" class="max-h-20 w-auto">
+    </div>
+  </div>
+</section>
+
+<!-- Scripture (auto, no buttons) -->
+<section class="py-6">
+  <div class="mx-auto container px-4 text-center">
+    <h2 class="text-[18px] font-semibold mb-1">Scripture Inspiration</h2>
+    <div id="scriptureSlide" class="min-h-[72px] transition-opacity duration-500">
+      <blockquote id="scrText" class="text-[16px] italic"></blockquote>
+      <div id="scrRef" class="text-[13px] text-[color:var(--muted)] mt-1"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Products -->
+<main class="pb-24">
+  <div class="mx-auto container px-4">
+    <h3 class="text-[18px] font-semibold mb-3">Featured Products</h3>
+
+    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <!-- Tee -->
+      <article class="product card overflow-hidden" data-cat="tees" data-id="tee-ocf">
+        <a href="./shirt.html" class="block bg-[#f5f6f8]">
+          <div class="w-full aspect-[4/3]">
+            <img src="./shirt-front.jpg" alt="OCF Tee Front" class="w-full h-full object-contain">
+          </div>
+          <div class="w-full aspect-[4/3] border-t border-[var(--line)]">
+            <img src="./shirt-back.jpg" alt="OCF Tee Back" class="w-full h-full object-contain">
+          </div>
+        </a>
+        <div class="p-4">
+          <div class="flex items-start justify-between gap-3">
+            <h4 class="font-semibold">OCF Classic T-Shirt</h4>
+            <div class="font-semibold">$30</div>
+          </div>
+          <p class="text-[13px] text-[color:var(--muted)] mt-1">Comfort Colors 1717 · 100% cotton · Unisex</p>
+          <div class="mt-3 flex items-center gap-2">
+            <button class="btn btn-primary text-sm addToCart"
+              data-id="tee-ocf"
+              data-name="OCF Classic T-Shirt"
+              data-price="30"
+              data-img="./shirt-front.jpg"
+              data-link="https://buy.stripe.com/test_cNicN6g3Keeb8KJbBh73G00">
+              Add to Cart
+            </button>
+            <a href="./shirt.html" class="btn btn-ghost text-sm">Details</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Hoodie -->
+      <article class="product card overflow-hidden" data-cat="hoodies" data-id="hoodie-ocf">
+        <div class="bg-[#f5f6f8] w-full aspect-[4/3] flex items-center justify-center">
+          <img src="./shirt-front.jpg" alt="OCF Hoodie (image placeholder)" class="h-5/6 w-auto object-contain opacity-80">
+        </div>
+        <div class="p-4">
+          <div class="flex items-start justify-between gap-3">
+            <h4 class="font-semibold">OCF Hoodie</h4>
+            <div class="font-semibold">$50</div>
+          </div>
+          <p class="text-[13px] text-[color:var(--muted)] mt-1">Midweight fleece · Unisex</p>
+          <div class="mt-3">
+            <button class="btn btn-primary text-sm addToCart"
+              data-id="hoodie-ocf"
+              data-name="OCF Hoodie"
+              data-price="50"
+              data-img="./shirt-front.jpg"
+              data-link="https://buy.stripe.com/test_cNicN6g3Keeb8KJbBh73G00">
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Hat -->
+      <article class="product card overflow-hidden" data-cat="hats" data-id="hat-ocf">
+        <div class="bg-[#f5f6f8] w-full aspect-[4/3] flex items-center justify-center">
+          <img src="./shirt-front.jpg" alt="OCF Hat (image placeholder)" class="h-5/6 w-auto object-contain opacity-80">
+        </div>
+        <div class="p-4">
+          <div class="flex items-start justify-between gap-3">
+            <h4 class="font-semibold">OCF Dad Hat</h4>
+            <div class="font-semibold">$25</div>
+          </div>
+          <p class="text-[13px] text-[color:var(--muted)] mt-1">Adjustable · Embroidered</p>
+          <div class="mt-3">
+            <button class="btn btn-primary text-sm addToCart"
+              data-id="hat-ocf"
+              data-name="OCF Dad Hat"
+              data-price="25"
+              data-img="./shirt-front.jpg"
+              data-link="https://buy.stripe.com/test_cNicN6g3Keeb8KJbBh73G00">
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Accessory -->
+      <article class="product card overflow-hidden" data-cat="accessories" data-id="sticker-ocf">
+        <div class="bg-[#f5f6f8] w-full aspect-[4/3] flex items-center justify-center">
+          <img src="./shirt-front.jpg" alt="OCF Sticker (image placeholder)" class="h-5/6 w-auto object-contain opacity-80">
+        </div>
+        <div class="p-4">
+          <div class="flex items-start justify-between gap-3">
+            <h4 class="font-semibold">OCF Sticker</h4>
+            <div class="font-semibold">$4</div>
+          </div>
+          <p class="text-[13px] text-[color:var(--muted)] mt-1">Durable vinyl · 3″</p>
+          <div class="mt-3">
+            <button class="btn btn-primary text-sm addToCart"
+              data-id="sticker-ocf"
+              data-name="OCF Sticker"
+              data-price="4"
+              data-img="./shirt-front.jpg"
+              data-link="https://buy.stripe.com/test_cNicN6g3Keeb8KJbBh73G00">
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</main>
+
+<!-- Cart: overlay + sheet -->
+<div id="cartOverlay"></div>
+<section id="cartSheet" class="pt-3 pb-24">
+  <div class="mx-auto container px-4">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="text-lg font-semibold">Your Cart</h3>
+      <button id="closeCart" class="text-[color:var(--muted)] text-sm">Close</button>
+    </div>
+
+    <div id="cartItems" class="divide-y divide-[var(--line)]"></div>
+
+    <div class="mt-4 flex items-center justify-between">
+      <div class="text-[15px]"><span class="text-[color:var(--muted)]">Subtotal:</span> <span id="cartSubtotal" class="font-semibold">$0</span></div>
+      <div class="text-[12px] text-[color:var(--muted)]">Checkout is per item</div>
+    </div>
+
+    <div class="mt-3 flex items-center justify-between gap-2">
+      <button id="clearCart" class="btn btn-ghost text-sm w-1/3">Clear</button>
+      <a id="checkoutFirst" href="#" target="_blank" class="btn btn-primary text-sm w-2/3 text-center">Checkout first item</a>
+    </div>
+  </div>
+</section>
+
+<!-- Sticky bottom bar on mobile -->
+<footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-[var(--line)] md:hidden">
+  <div class="mx-auto container px-4 py-2 flex items-center justify-between">
+    <a href="#grid" class="text-sm font-semibold">Shop</a>
+    <button id="openCartBottom" class="btn btn-primary text-sm">Cart <span id="cartCountBottom" class="badge ml-2">0</span></button>
+  </div>
+</footer>
+
+<script>
+/* ---------- Scripture auto-rotate ---------- */
+const SCRIPTURES = [
+  {t:'I can do all things through Christ who strengthens me.', r:'Philippians 4:13'},
+  {t:'The Lord is my shepherd; I shall not want.', r:'Psalm 23:1'},
+  {t:'Trust in the Lord with all your heart.', r:'Proverbs 3:5'},
+  {t:'Let all that you do be done in love.', r:'1 Corinthians 16:14'}
+];
+const scrText = document.getElementById('scrText');
+const scrRef  = document.getElementById('scrRef');
+const scrSlide= document.getElementById('scriptureSlide');
+let s = 0;
+function renderVerse(i){
+  scrSlide.style.opacity = 0;
+  setTimeout(()=>{
+    scrText.textContent = '“'+SCRIPTURES[i].t+'”';
+    scrRef.textContent  = '— '+SCRIPTURES[i].r;
+    scrSlide.style.opacity = 1;
+  },180);
+}
+renderVerse(s);
+setInterval(()=>{ s=(s+1)%SCRIPTURES.length; renderVerse(s); }, 6000);
+
+/* ---------- Category filter ---------- */
+let activeCat = 'all';
+const catBtns = document.querySelectorAll('[data-cat]');
+const cards = [...document.querySelectorAll('.product')];
+catBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    catBtns.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCat = btn.getAttribute('data-cat');
+    cards.forEach(c=>{
+      const ok = activeCat==='all' || c.dataset.cat===activeCat;
+      c.style.display = ok ? '' : 'none';
+    });
+  });
+});
+
+/* ---------- Cart (localStorage) ---------- */
+const LS_KEY = 'ocf_cart_v1';
+const cartCount = document.getElementById('cartCount');
+const cartCountBottom = document.getElementById('cartCountBottom');
+const cartItems = document.getElementById('cartItems');
+const cartSubtotal = document.getElementById('cartSubtotal');
+const checkoutFirst = document.getElementById('checkoutFirst');
+
+function loadCart(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)) || []; }catch(e){return[]} }
+function saveCart(c){ localStorage.setItem(LS_KEY, JSON.stringify(c)); }
+function sumCart(c){ return c.reduce((a,x)=>a+(x.price*x.qty),0); }
+function fmt(n){ return '$'+n.toFixed(2); }
+function setCounts(c){ const n=c.reduce((a,x)=>a+x.qty,0); cartCount.textContent=n; cartCountBottom.textContent=n; }
+
+function renderCart(){
+  const c = loadCart();
+  setCounts(c);
+  cartItems.innerHTML = '';
+  if(c.length===0){
+    cartItems.innerHTML = '<div class="py-6 text-sm text-slate-500">Your cart is empty.</div>';
+    cartSubtotal.textContent = '$0.00';
+    checkoutFirst.href = '#';
+    checkoutFirst.classList.add('pointer-events-none','opacity-60');
+    return;
+  }
+  checkoutFirst.classList.remove('pointer-events-none','opacity-60');
+  c.forEach(item=>{
+    const row = document.createElement('div');
+    row.className='py-3 flex items-center gap-3';
+    row.innerHTML = `
+      <img src="${item.img}" alt="" class="h-14 w-14 rounded object-cover border" />
+      <div class="flex-1">
+        <div class="text-[14px] font-semibold">${item.name}</div>
+        <div class="text-[12px] text-slate-500">${fmt(item.price)} · Qty <span class="q">${item.qty}</span></div>
+        <div class="mt-2 flex items-center gap-2">
+          <button class="px-2 py-1 border rounded dec">−</button>
+          <button class="px-2 py-1 border rounded inc">+</button>
+          <a href="${item.link}" target="_blank" class="text-[13px] underline ml-2">Buy this</a>
+          <button class="ml-auto text-[13px] text-slate-600 underline rmv">Remove</button>
+        </div>
+      </div>`;
+    // handlers
+    row.querySelector('.dec').onclick=()=>updateQty(item.id,-1);
+    row.querySelector('.inc').onclick=()=>updateQty(item.id, 1);
+    row.querySelector('.rmv').onclick=()=>removeItem(item.id);
+    cartItems.appendChild(row);
+  });
+  cartSubtotal.textContent = fmt(sumCart(c));
+  checkoutFirst.href = c[0].link; // first item's Stripe link
+}
+function addToCart(data){
+  const c = loadCart();
+  const i = c.findIndex(x=>x.id===data.id);
+  if(i>=0) c[i].qty += 1;
+  else c.push({...data, qty:1});
+  saveCart(c);
+  renderCart();
+  openCart();
+}
+function updateQty(id, d){
+  const c = loadCart();
+  const i = c.findIndex(x=>x.id===id);
+  if(i<0) return;
+  c[i].qty += d;
+  if(c[i].qty<=0) c.splice(i,1);
+  saveCart(c); renderCart();
+}
+function removeItem(id){
+  saveCart(loadCart().filter(x=>x.id!==id)); renderCart();
+}
+function clearCart(){ localStorage.removeItem(LS_KEY); renderCart(); }
+
+document.querySelectorAll('.addToCart').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    addToCart({
+      id: btn.dataset.id,
+      name: btn.dataset.name,
+      price: Number(btn.dataset.price),
+      img: btn.dataset.img,
+      link: btn.dataset.link
+    });
+  });
+});
+
+/* ---------- Cart sheet open/close ---------- */
+const html = document.documentElement;
+const cartOverlay = document.getElementById('cartOverlay');
+const cartSheet = document.getElementById('cartSheet');
+function openCart(){ html.classList.add('sheet-open'); }
+function closeCart(){ html.classList.remove('sheet-open'); }
+document.getElementById('openCart').onclick=openCart;
+document.getElementById('openCartBottom').onclick=openCart;
+document.getElementById('closeCart').onclick=closeCart;
+cartOverlay.onclick=closeCart;
+document.getElementById('clearCart').onclick=()=>{ clearCart(); };
+
+/* Init */
+renderCart();
+</script>
+</body>
+</html>
